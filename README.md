@@ -66,10 +66,10 @@ python3 main.py
 The script expects data in the following format:
 
 ```python
-# A list of sentences partially translated, directly from tablets
+# A list of sentences from the tablets, both untranslated and partially-translated
 data = [
-    {"sentence": ["𐘀", "𐘁", "𐘂", "known1"], "translation": ["", "", "", "water"]},
-    {"sentence": ["𐘃", "𐘄", "𐘅", "known2"], "translation": ["", "", "", "tree"]}
+    {"sentence": ["𐘀", "𐘁", "𐘂", "3"], "translation": ["", "person", "", "3"]},
+    {"sentence": ["𐘃", "𐘄", "𐘅", "3"], "translation": ["dog", "", "", "3"]}
 ]
 
 # A dictionary of all known words
