@@ -1,5 +1,7 @@
 import re
 import os
+import ast
+
 from completion import generate_completion
 
 linear_a_dict = {
@@ -82,18 +84,7 @@ You must provide your answer within brackets, so as an example for the above, I 
     response = generate_completion(prompt)
     print("full response from AI:", response)
     translated = extract_content_from_brackets(response)
-    print("translated (should be brackets): ", response)
-
-    # Format the result to match the original sentence structure
-    formatted_translation = []
-    for original_word, translated_word in zip(sentence, translated):
-        if original_word in linear_a_dict:
-            formatted_translation.append(linear_a_dict[original_word])
-        elif translated_word and translated_word != "unknown":
-            formatted_translation.append(translated_word)
-            update_symbol(original_word, translated_word)
-        else:
-            formatted_translation.append("guess")
+    print("translated (should be brackets): ", translated)
 
     return translated
 
@@ -157,12 +148,12 @@ def main(data):
         print("Known Translations:", known_translation)
 
         translation_attempt = ai_translate(sentence)
-        print("AI Translation Attempt:", translation_attempt)
+        translation = ast.literal_eval(f"[{translation_attempt}]")
 
         if ai_review(translation_attempt):
             print("Translation approved.")
             # Update the glossary and save
-            for sym, trans in zip(sentence, translation_attempt):
+            for sym, trans in zip(sentence, translation):
                 update_symbol(sym, trans)
 
             save_glossary(linear_a_dict)
