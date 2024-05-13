@@ -1,4 +1,5 @@
-import openai
+import re
+import os
 from completion import generate_completion
 
 linear_a_dict = {
@@ -7,7 +8,7 @@ linear_a_dict = {
     '𐘐': 'ewe', '𐘑': 'ram', '𐘒': 'goat', '𐘓': 'she-goat', '𐘔': 'he-goat', '𐘕': 'bovine', '𐘖': 'ox/bull', '𐘗': '',
     '𐘘': '', '𐘙': '', '𐘚': '', '𐘛': '', '𐘜': '', '𐘝': 'figs', '𐘞': '', '𐘟': '',
     '𐘠': '', '𐘡': '', '𐘢': '', '𐘣': '', '𐘤': '', '𐘥': '', '𐘦': '', '𐘧': '',
-    '𐘨': '', '𐘩': '', '𐘪': '', '𐘫': '', '𐘬': '', '𐘭': '', '𐘮': 'cloth', '𐘯': '',
+    '𐘨': '', '𐘩': '', '𐘪': '', '𐘫': '', '𐘬': 'sheppard', '𐘭': '', '𐘮': 'cloth', '𐘯': '',
     '𐘰': '', '𐘱': '', '𐘲': '', '𐘳': '', '𐘴': '', '𐘵': '', '𐘶': '', '𐘷': '',
     '𐘸': '', '𐘹': '', '𐘺': '', '𐘻': '', '𐘼': '', '𐘽': '', '𐘾': '', '𐘿': '',
     '𐙀': '', '𐙁': '', '𐙂': '', '𐙃': '', '𐙄': 'pig', '𐙅': 'fish', '𐙆': '', '𐙇': 'person',
@@ -47,6 +48,12 @@ linear_a_dict = {
     '𐝠': '', '𐝡': '', '𐝢': '', '𐝣': '', '𐝤': '', '𐝥': '', '𐝦': '', '𐝧': '',
 }
 
+data = [
+    {"sentence": ["𐘿", "𐘠", "𐙇", "𐘚", "𐘱", "3"], "translation": ["", "", "person", "", "", "3"]}, # HT 7a
+    {"sentence": ["𐘬", "𐘱", "4"], "translation": ["", "", '4']}, # HT 7a
+    # {"sentence": [], "translation": []},
+]
+
 # Function to update the dictionary
 def update_symbol(symbol, description):
     if symbol in linear_a_dict:
@@ -55,71 +62,101 @@ def update_symbol(symbol, description):
     else:
         return "Symbol not found in dictionary."
 
-
 # Simulate AI translation using GPT-4
-def ai_translate(sentence, glossary):
-    """Use GPT-4 to translate by filling in blanks based on the entire known glossary."""
-    # Prepare the context for GPT-4
-    glossary_context = " ".join([f"{k} means {v}." for k, v in glossary.items() if v])
-    context_hint = "This is likely a sentence about agricultural audit. Please fill in the blanks based on the glossary and the context."
+def ai_translate(sentence):
+    glossary_context = " ".join([f"{k} means {v}." for k, v in linear_a_dict.items() if v])
+    context_hint = """
+You are a world famous linguist, known for your specialisation in Ancient Greek, Linear B, and excited at the challenge of being the first to translate Linear A.
+
+I’ve provided you with an incomplete glossary of Linear A, where some of the symbols have been translated. I’m also going to provide you with two sentences in this format:      {
+"sentence": ["𐘿", "𐘠", "𐙇", "𐘚", "𐘱", "3"],
+"translation": ["", "", "person", "", "", "3"]
+},
+
+Where sentence is the sentence be translated, and translation is what you’ll be adding to, where I’ve provided the known translations and I want you to guess the ‘’ empty spaces. This might seem difficult, but remember, it's likely that this is an audit by an administrator of a bronze age kingdom, so make sure it makes sense in that context; maybe they are talking about storing food, or going to war. It’s also a pictorial language, so maybe the icon looks like something.
+
+You must provide your answer within brackets, so as an example for the above, I would expect something like this: [“fruit”, “cut”, "person", “picked, “store’, “3”]
+    """
     prompt = f"{glossary_context} {context_hint} Translate the following Linear A sentence: {' '.join(sentence)}"
 
-    try:
-        response = openai.Completion.create(
-            engine="text-davinci-002",  # Use the appropriate GPT-4 model
-            prompt=prompt,
-            max_tokens=150,  # Adjust tokens based on expected sentence length
-            temperature=0.5  # Adjust for creativity vs. accuracy
-        )
-        translated = response.choices[0].text.strip().split()
-    except Exception as e:
-        print(f"Error during AI translation: {e}")
-        translated = ["unknown"] * len(sentence)  # Default to 'unknown' for all words if error occurs
+    response = generate_completion(prompt)
+    print("full response from AI:", response)
+    translated = extract_content_from_brackets(response)
+    print("translated (should be brackets): ", response)
 
     # Format the result to match the original sentence structure
     formatted_translation = []
     for original_word, translated_word in zip(sentence, translated):
-        if original_word in glossary:
-            formatted_translation.append(glossary[original_word])
+        if original_word in linear_a_dict:
+            formatted_translation.append(linear_a_dict[original_word])
         elif translated_word and translated_word != "unknown":
             formatted_translation.append(translated_word)
             update_symbol(original_word, translated_word)
         else:
             formatted_translation.append("guess")
-    return formatted_translation
+
+    return translated
+
+def extract_content_from_brackets(text):
+    """Extract and return the content inside the first pair of square brackets in the provided text."""
+    match = re.search(r'\[(.*?)\]', text)
+    if match:
+        return match.group(1)  # Returns the content within the brackets
+    return "No content found"  # Returns a message if no brackets are found
 
 # Simulate AI review using GPT-4
-def ai_review(translated_sentence):
-    """Use GPT-4 to review the plausibility of the translated sentence."""
-    prompt = f"I've attempted to translate a Linear A transcription: {' '.join(translated_sentence)}"
+def ai_review(translated_sentence, empty_sentence=''):
+    prompt = f"I've attempted to translate a Linear A transcription here: {' '.join(translated_sentence)}, based on this: {empty_sentence}. What I want you to do is review whether this translation looks like it could be 'correct'. You'll know it's correct if the following is true. Does the sentence make sense in the context of an administrator looking after a bronze age city state? Perhaps it's talking about agriculture or counting items, talking about war or history. If it does, I want you to say '[TRUE]' at the end of your thought process, otherwise say '[FALSE]'."
     try:
-        response = openai.Completion.create(
-            engine="text-davinci-002",
-            prompt=prompt,
-            max_tokens=50,
-            temperature=0.7
-        )
-        review = response.choices[0].text.strip()
-        return "plausible" in review.lower()
-    except Exception as e:
-        print(f"Error during AI review: {e}")
+        response = generate_completion(prompt)
+        answer = check_true_false(response)
+
+        if answer is None:
+            raise ValueError("AI review response not recognized.")
+        if answer:
+            return True
+    except:
+        print("AI review response not recognized.")
+
         return False
 
 def save_glossary(glossary):
-    """Save the glossary to a text file."""
-    with open('glossary.txt', 'w') as file:
+    directory = 'results'
+    os.makedirs(directory, exist_ok=True)  # Ensure the directory exists
+
+    # Find the next available file number
+    i = 1
+    while os.path.exists(os.path.join(directory, f"glossary{i}.txt")):
+        i += 1
+
+    # Create the file path with the new file number
+    file_path = os.path.join(directory, f"glossary{i}.txt")
+
+    # Write the glossary to the file
+    with open(file_path, 'w') as file:
         for key, value in glossary.items():
             file.write(f"{key}: {value}\n")
 
+    print(f"Glossary saved to {file_path}")
+
+def check_true_false(answer):
+    if '[TRUE]' in answer:
+        return True
+    elif '[FALSE]' in answer:
+        return False
+    else:
+        # Return None or raise an exception if neither is found
+        return None
+
 # Main function to process the data
-def main(data, glossary):
+def main(data):
     for entry in data:
         sentence = entry['sentence']
         known_translation = entry['translation']
         print("Original:", sentence)
         print("Known Translations:", known_translation)
 
-        translation_attempt = ai_translate(sentence, glossary)
+        translation_attempt = ai_translate(sentence)
         print("AI Translation Attempt:", translation_attempt)
 
         if ai_review(translation_attempt):
@@ -127,19 +164,14 @@ def main(data, glossary):
             # Update the glossary and save
             for sym, trans in zip(sentence, translation_attempt):
                 update_symbol(sym, trans)
+
+            save_glossary(linear_a_dict)
         else:
             print("Translation disapproved, retrying...")
             continue
 
-        print("Current Glossary State:", glossary)
         print("Current Linear A Dictionary State:", linear_a_dict)
         print("\n")
 
 if __name__ == "__main__":
-    # Example data setup
-    data = [
-        {"sentence": ["𐘀", "𐘁", "𐘂", "known1"], "translation": ["", "", "", "water"]},
-        {"sentence": ["𐘃", "𐘄", "𐘅", "known2"], "translation": ["", "", "", "tree"]}
-    ]
-    glossary = {"known1": "water", "known2": "tree"}
-    main(data, glossary)
+    main(data)

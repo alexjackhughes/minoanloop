@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 import pinecone
 import numpy as np
 import os
@@ -6,10 +6,11 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-openai.organization = os.getenv("OPENAI_ORGANIZATION_ID")
+# openai.organization = os.getenv("OPENAI_ORGANIZATION_ID")
 openai_api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key = openai_api_key
 
+client = OpenAI(api_key=openai_api_key)
+# client(default_organization=os.getenv("OPENAI_ORGANIZATION_ID"))
 
 model = os.environ.get("CHAT_MODEL")
 
@@ -22,9 +23,7 @@ def generate_completion(prompt, messages=None):
           {"role": "user", "content": prompt}
       ]
 
-  response = openai.ChatCompletion.create(
-    model=model,
-    messages=messages
-    )
+  response = client.chat.completions.create(model=model,
+  messages=messages)
 
-  return response['choices'][0]['message']['content']
+  return response.choices[0].message.content
