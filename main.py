@@ -66,7 +66,6 @@ def update_symbol(symbol, description):
 
 # Simulate AI translation using GPT-4
 def ai_translate(sentence):
-    glossary_context = " ".join([f"{k} means {v}." for k, v in linear_a_dict.items() if v])
     context_hint = """
 You are a world famous linguist, known for your specialisation in Ancient Greek, Linear B, and excited at the challenge of being the first to translate Linear A.
 
@@ -75,11 +74,11 @@ I’ve provided you with an incomplete glossary of Linear A, where some of the s
 "translation": ["", "", "person", "", "", "3"]
 },
 
-Where sentence is the sentence be translated, and translation is what you’ll be adding to, where I’ve provided the known translations and I want you to guess the ‘’ empty spaces. This might seem difficult, but remember, it's likely that this is an audit by an administrator of a bronze age kingdom, so make sure it makes sense in that context; maybe they are talking about storing food, or going to war. It’s also a pictorial language, so maybe the icon looks like something.
+Where sentence is the sentence be translated, and translation is what you’ll be adding to, where I’ve provided the known translations and I want you to guess the ‘’ empty spaces. This might seem difficult, but remember, it's likely that this is an audit by an administrator of a bronze age kingdom, so make sure it makes sense in that context; maybe they are talking about storing food, or going to war. It’s also a pictorial language, so maybe the icon looks like something. Finally, the word you are guessing is likely NOT vessel; that exists already in the glossary. Similiarly, it's unlikely to be a connecting word like has or is or because etc.
 
 You must provide your answer within brackets, so as an example for the above, I would expect something like this: [“fruit”, “cut”, "person", “picked, “store’, “3”]
     """
-    prompt = f"{glossary_context} {context_hint} Translate the following Linear A sentence: {' '.join(sentence)}"
+    prompt = f"Here is the dictionary: {linear_a_dict}. {context_hint}. Now, translate the following Linear A sentence: {' '.join(sentence)}"
 
     response = generate_completion(prompt)
     print("full response from AI:", response)
@@ -97,7 +96,7 @@ def extract_content_from_brackets(text):
 
 # Simulate AI review using GPT-4
 def ai_review(translated_sentence, empty_sentence=''):
-    prompt = f"I've attempted to translate a Linear A transcription here: {' '.join(translated_sentence)}, based on this: {empty_sentence}. What I want you to do is review whether this translation looks like it could be 'correct'. You'll know it's correct if the following is true. Does the sentence make sense in the context of an administrator looking after a bronze age city state? Perhaps it's talking about agriculture or counting items, talking about war or history. If it does, I want you to say '[TRUE]' at the end of your thought process, otherwise say '[FALSE]'."
+    prompt = f"I've attempted to translate a Linear A transcription here: {' '.join(translated_sentence)}, based on this: {empty_sentence}. What I want you to do is review whether this translation looks like it could be 'correct'. You'll know it's correct if the following is true. Does the sentence make sense in the context of an administrator looking after a bronze age city state? Perhaps it's talking about agriculture or counting items, talking about war, or religion, or history, or current events. If it does, I want you to say '[TRUE]' at the end of your thought process, otherwise say '[FALSE]'."
     try:
         response = generate_completion(prompt)
         answer = check_true_false(response)
@@ -123,10 +122,14 @@ def save_glossary(glossary):
     # Create the file path with the new file number
     file_path = os.path.join(directory, f"glossary{i}.txt")
 
-    # Write the glossary to the file
-    with open(file_path, 'w') as file:
-        for key, value in glossary.items():
-            file.write(f"{key}: {value}\n")
+    # Write the glossary to the file in a dictionary-like format
+    with open(file_path, 'w', encoding='utf-8') as file:
+        # Start the dictionary
+        file.write('{\n')
+        # Write each item formatted as a dictionary entry
+        entries = [f"    '{key}': '{value}'" for key, value in glossary.items()]
+        file.write(',\n'.join(entries))
+        file.write('\n}\n')
 
     print(f"Glossary saved to {file_path}")
 
@@ -159,7 +162,7 @@ def main(data):
             save_glossary(linear_a_dict)
         else:
             print("Translation disapproved, retrying...")
-            continue
+            exit()
 
         print("Current Linear A Dictionary State:", linear_a_dict)
         print("\n")

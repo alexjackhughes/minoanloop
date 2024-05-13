@@ -26,6 +26,7 @@ If we can get it to work for Linear A, there's no reason we couldn't bruteforce 
 4. At the moment, the program can't make adjustments to found words mid-cycle. In an ideal world, mid-cycle you would want the translator to be able change words it's found previously, so long as it's other translations still make sense.
 5. It might make more sense rather than to pass the translation back, to pass the entire dictionary.
 6. If we added more tablet sentences, I think you could structure it so that a found word appears in the next sentence, allowing us to build up the translations more quickly, and hopefully making the more difficult translations easier.
+7. The results currently get saved to a file; what about if instead, the program edited itself (or at least the dictionary) directly?
 
 ## Features
 
