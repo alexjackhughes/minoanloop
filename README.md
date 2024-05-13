@@ -1,4 +1,4 @@
-### MinoanLoop: Using GPT for Linear A Translation
+# MinoanLoop: Using GPT for Linear A Translation
 
 What is this?
 
@@ -8,25 +8,23 @@ This is a project to try to utilise OpenAI's GPT-4 to "guesstimate" specific wor
 
 My main thoughts about why I _think_ this could work:
 
-1. We know the structure of the sentences, i.e. the order of the symbols to be read
-2. We know some of the words, as they have the same meaning in Linear B
-3. Once we have "got" a word, all other sentences that include that word are easy to translate - it's a bit like the attention paper
-4. We can assume the tablets are actually trying to say something, it's not just random symbols
-5. We know that most of the tablets are some kind of inventory (they include numbers next to words we know like goat etc), which allows us to make educated guesses on the words for some tablets
-6. It's not a highly developed language, some of the sentences probably do mean something like "10 sheep" or "5 jars of oil"
-7. If a million monkeys in a room can write Shakespeare, then surely a million GPT-4s can brute-force translate Linear A
+1. We can assume the tablets aren't random sentences, there is meaning here
+2. We know the structure of the sentences, i.e. the order of the symbols to be read
+3. Some of the characters are known from Linear B, so we aren't starting from scratch
+4. Most of the characters appear to represent entire words, and some are even pictoral, helping us make educated guesses
+5. A lot of the tablets appears to be short inventory lists, which adds context to the sentence we are translating
+6. This isn't a highly developed languages; some of the sentences probably do mean something like "10 sheep" or "5 jars oil"
+7. Once we have "got" a word, all other sentences that include that word are easy to translate - in the same way GPT can "guess" a sentence based on the previous words it's generated - we might be able to do the same thing here. A bit like how crossword gets easier the more words you have.
+8. If a million monkeys in a room can write Shakespeare, then surely a billion GPT-4s can brute-force Homer?
 
-If we can get it to work for Linear A, there's no reason we couldn't bruteforce other languages. Super neat.
+Plus, if this method words we might be able to apply it to other languages. Pretty neat.
 
 ## Main Problems
 
-1. It's difficult to manually translate a tablet from [here](https://sigla.phis.me/browse.html) into the correct [unicode characters](https://en.wikipedia.org/wiki/Template:Unicode_chart_Linear_A).
-2. It's expensive to run right now, given we are trying to brute force the translation of Linear A.
-3. There's no way currently of checking previous bad translations, so that we don't get stuck trying the same words constantly. With high enough context, we could actually provide all of the previous "results" to the AI and let it just figure it out.
-4. At the moment, the program can't make adjustments to found words mid-cycle. In an ideal world, mid-cycle you would want the translator to be able change words it's found previously, so long as it's other translations still make sense.
-5. It might make more sense rather than to pass the translation back, to pass the entire dictionary.
-6. If we added more tablet sentences, I think you could structure it so that a found word appears in the next sentence, allowing us to build up the translations more quickly, and hopefully making the more difficult translations easier.
-7. The results currently get saved to a file; what about if instead, the program edited itself (or at least the dictionary) directly?
+1. It's time consuming to manually translate a tablet from [here](https://sigla.phis.me/browse.html) into the correct [unicode characters](https://en.wikipedia.org/wiki/Template:Unicode_chart_Linear_A). Perhaps we could implement a scraper/AI that could be trained on the unicode characters and spit out the correct translation based on images of the tablets?
+2. It's expensive and slow to run right now, although I'm hoping this will change as models get cheaper/faster.
+3. The script doesn't take into consideration the "bad translations" from results; As context increases, it might worth passing all the dictionaries back to the AI, so it doesn't keep guessing the same words.
+4. At the moment we ask the AI to just guess the translation, but instead it might be better to ask it to guess the entire dictionary, and then pass that dictionary back. This way, it could keep running through all the sentences in a loop, until it's got all the words and all the sentences make sense.
 
 ## Features
 
