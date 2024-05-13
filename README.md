@@ -27,6 +27,7 @@ Plus, if this method words we might be able to apply it to other languages. Pret
 4. At the moment we ask the AI to guess only the translation, but instead it might be better to ask it to guess the entire dictionary and pass that whole dictionary back. This way, it would be able to update even the words it thinks it knows.
 5. It might be worth implementing some kind of "confidence" score, so we can see how confident the AI is in it's translation. This could be used to filter out bad translations, or to know when to stop. Like words we know could be 100% so it knows not to change them, and then the guesses could be 50% or 25%.
 6. It might be better to review _all_ the sentences at the end of each cycle, rather than just the last one. Then it could run infinitely, and exit only when it passes a certain threshold of looks correct translations.
+7. Lack of data: There just isn't that many sentences to train on. I wonder if you could use GPT generate more sentences, based on the known dictonary, and then test on that synthetic data? You would have to lower the threshold for "correct" translations, but it might be worth it.
 
 ## Features
 
