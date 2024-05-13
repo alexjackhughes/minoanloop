@@ -21,10 +21,12 @@ Plus, if this method words we might be able to apply it to other languages. Pret
 
 ## Main Problems
 
-1. It's time consuming to manually translate a tablet from [here](https://sigla.phis.me/browse.html) into the correct [unicode characters](https://en.wikipedia.org/wiki/Template:Unicode_chart_Linear_A). Perhaps we could implement a scraper/AI that could be trained on the unicode characters and spit out the correct unicode translation based on images of the tablets? This might even already exist, and I just couldn't find it.
-2. It's expensive and slow to run right now, although I'm hoping this will change as models get cheaper/faster.
-3. The script doesn't take into consideration the "bad translations" from results; As context increases, it might worth passing all the dictionaries back to the AI, so it doesn't keep guessing the same words.
-4. At the moment we ask the AI to just guess the translation, but instead it might be better to ask it to guess the entire dictionary, and then pass that dictionary back. This way, it could keep running through all the sentences in a loop, until it's got all the words and all the sentences make sense.
+1. It's time consuming to manually translate a tablet from [here](https://sigla.phis.me/browse.html) into the correct [unicode characters](https://en.wikipedia.org/wiki/Template:Unicode_chart_Linear_A). Perhaps we could implement a scraper/AI that could be trained on the unicode characters and spit out the correct unicode translation based on an image of the tablets?
+2. It's expensive and dumb and slow to run right now, although I'm hoping this will change as models get cheaper/faster.
+3. The script doesn't take into consideration the "bad translations" from results; As context increases, it might worth passing all the previous dictionaries back to the AI, so it doesn't keep guessing the same words.
+4. At the moment we ask the AI to guess only the translation, but instead it might be better to ask it to guess the entire dictionary and pass that whole dictionary back. This way, it would be able to update even the words it thinks it knows.
+5. It might be worth implementing some kind of "confidence" score, so we can see how confident the AI is in it's translation. This could be used to filter out bad translations, or to know when to stop. Like words we know could be 100% so it knows not to change them, and then the guesses could be 50% or 25%.
+6. It might be better to review _all_ the sentences at the end of each cycle, rather than just the last one. Then it could run infinitely, and exit only when it passes a certain threshold of looks correct translations.
 
 ## Features
 
@@ -43,15 +45,9 @@ To use this script, you need:
 ## Setup
 
 1. **Install Python**: Ensure Python 3.8+ is installed on your system.
-2. **Install Dependencies**:
-   ```bash
-   pip install openai
-   ```
-3. **API Key**: Set up your OpenAI API key. It is recommended to set this as an environment variable for security reasons:
-   ```bash
-   export OPENAI_API_KEY='your_api_key_here'
-   ```
-4. **Download the Script**: Clone or download this repository to your local machine.
+2. **Install Dependencies**
+3. **Download the Script**: Clone or download this repository to your local machine.
+4. **API Key**: Copy the `.env.example` file to `.env` and add your OpenAI API key.
 
 ## Usage
 
