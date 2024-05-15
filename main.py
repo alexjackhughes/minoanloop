@@ -5,14 +5,14 @@ import ast
 from completion import generate_completion
 
 linear_a_dict = {
-    '𐘀': '', '𐘁': '', '𐘂': '', '𐘃': '', '𐘄': '', '𐘅': '', '𐘆': '', '𐘇': '',
+    '𐘀': '', '𐘁': '', '𐘂': '', '𐘃': 'produce', '𐘄': '', '𐘅': '', '𐘆': '', '𐘇': '',
     '𐘈': '', '𐘉': '', '𐘊': '', '𐘋': '', '𐘌': '', '𐘍': '', '𐘎': '', '𐘏': 'sheep',
-    '𐘐': 'ewe', '𐘑': 'ram', '𐘒': 'goat', '𐘓': 'she-goat', '𐘔': 'he-goat', '𐘕': 'bovine', '𐘖': 'ox/bull', '𐘗': '',
+    '𐘐': 'ewe', '𐘑': 'ram', '𐘒': 'goat', '𐘓': 'she-goat', '𐘔': 'he-goat', '𐘕': 'bovine', '𐘖': 'ox/bull', '𐘗': 'items',
     '𐘘': '', '𐘙': '', '𐘚': '', '𐘛': '', '𐘜': '', '𐘝': 'figs', '𐘞': '', '𐘟': '',
     '𐘠': '', '𐘡': '', '𐘢': '', '𐘣': '', '𐘤': '', '𐘥': '', '𐘦': '', '𐘧': '',
-    '𐘨': '', '𐘩': '', '𐘪': '', '𐘫': '', '𐘬': 'sheppard', '𐘭': '', '𐘮': 'cloth', '𐘯': '',
+    '𐘨': '', '𐘩': '', '𐘪': '', '𐘫': 'weave', '𐘬': 'sheppard', '𐘭': '', '𐘮': 'cloth', '𐘯': '',
     '𐘰': '', '𐘱': 'tax', '𐘲': '', '𐘳': '', '𐘴': '', '𐘵': '', '𐘶': '', '𐘷': '',
-    '𐘸': '', '𐘹': '', '𐘺': '', '𐘻': '', '𐘼': '', '𐘽': '', '𐘾': '', '𐘿': '',
+    '𐘸': '', '𐘹': 'store', '𐘺': '', '𐘻': '', '𐘼': '', '𐘽': '', '𐘾': '', '𐘿': '',
     '𐙀': '', '𐙁': '', '𐙂': '', '𐙃': '', '𐙄': 'pig', '𐙅': 'fish', '𐙆': '', '𐙇': 'person',
     '𐙈': '', '𐙉': 'wheat', '𐙊': 'wheat', '𐙋': 'olives', '𐙌': '', '𐙍': 'wine', '𐙎': 'wine', '𐙏': 'wine',
     '𐙐': '', '𐙑': '', '𐙒': '', '𐙓': '', '𐙔': 'helmet', '𐙕': '', '𐙖': 'oil', '𐙗': 'cyperus',
@@ -48,11 +48,38 @@ linear_a_dict = {
     '𐝈': '', '𐝉': '', '𐝊': '', '𐝋': '', '𐝌': '', '𐝍': '', '𐝎': '', '𐝏': '',
     '𐝐': '', '𐝑': '', '𐝒': '', '𐝓': '', '𐝔': '', '𐝕': '',
     '𐝠': '', '𐝡': '', '𐝢': '', '𐝣': '', '𐝤': '', '𐝥': '', '𐝦': '', '𐝧': '',
+        '𐄇': '1 units',
+    '𐄈': '2 units',
+    '𐄉': '3 units',
+    '𐄊': '4 units',
+    '𐄋': '5 units',
+    '𐄌': '6 units',
+    '𐄍': '7 units',
+    '𐄎': '8 units',
+    '𐄏': '9 units',
+    '𐄐': '10 units',
+    '𐄑': '20 units',
+    '𐄒': '30 units',
+    '𐄓': '40 units'
 }
 
+# Collect more from here:
 data = [
-    {"sentence": ["𐘿", "𐘠", "𐙇", "𐘚", "𐘱", "3"], "translation": ["", "", "person", "", "", "3"]}, # HT 7a
-    {"sentence": ["𐘬", "𐘱", "4"], "translation": ["", "", '4']}, # HT 7a
+    {
+  "sentence": ["𐘤", "𐘀", "𐘃", "𐘈", "𐘴", "𐄋", "𐘇", "𐘤", "𐘀", "𐘄", "𐘚", "𐘇", "𐘲", "𐘫", "𐘮", "𐄊"],
+  "translation": ["", "", "produce", "", "", "5units", "", "", "", "", "", "", "", "weave", "", "4units"]
+},  # ARKH 2
+{
+  "sentence":    ["𐘿", "𐘠", "𐙇", "𐘚", "𐘘", "𐘱", "𐄉", "𐘬", "𐘱", "𐄊", "𐘳", "𐘅", "𐘠", "𐘀", "𐘙", "𐘃", "𐘹", "𐄇"],
+  "translation": ["", "", "", "", "", "tax", "3units", "sheppard", "tax", "4units", "", "", "", "", "produce", "", "1unit"]
+},  # HT 7a
+{
+  "sentence": ["𐘐", "𐘹", "𐘗", "𐄇", "𐘀", "𐘘", "𐄈"],
+  "translation": ["", "", "", "", "", "", ""]
+}, # HT 7b
+    {"sentence": ["𐘤", "𐘀", "𐘃", "𐘈", "𐘴", "𐄋", "𐘇", "𐘀", "𐘄", "𐘚"], "translation": ["", "", "produce", "", "", "5units", "", "", "", ""]},
+    {"sentence": ["𐘐", "𐘹", "𐘗"], 'translation': ['', '', ''] }, # HT 117b
+
     # {"sentence": [], "translation": []},
 ]
 
@@ -69,14 +96,14 @@ def ai_translate(sentence):
     context_hint = """
 You are a world famous linguist, known for your specialisation in Ancient Greek, Linear B, and excited at the challenge of being the first to translate Linear A.
 
-I’ve provided you with an incomplete glossary of Linear A, where some of the symbols have been translated. I’m also going to provide you with two sentences in this format:      {
+I’ve provided you with an incomplete glossary of Linear A, where some of the symbols have been translated. I’m also going to provide you with two sentences in this format: {
 "sentence": ["𐘿", "𐘠", "𐙇", "𐘚", "𐘱", "3"],
 "translation": ["", "", "person", "", "", "3"]
 },
 
-Where sentence is the sentence be translated, and translation is what you’ll be adding to, where I’ve provided the known translations and I want you to guess the ‘’ empty spaces. This might seem difficult, but remember, it's likely that this is an audit by an administrator of a bronze age kingdom, so make sure it makes sense in that context; maybe they are talking about storing food, or going to war. It’s also a pictorial language, so maybe the icon looks like something. Finally, the word you are guessing is likely NOT vessel; that exists already in the glossary. Similiarly, it's unlikely to be a connecting word like has or is or because etc.
+Where sentence is the sentence be translated, and translation has known words added to it. I've also provided a dictonary of icons to known terms, please use this dictionary for missing icons first. I then want you to guess the ‘’ empty spaces. This might seem difficult, but remember, it's likely that this is an audit by an administrator of a bronze age kingdom, so make sure it makes sense in that context; maybe they are talking about storing food, going to war or other bronze age activities. It’s also a pictorial language, so maybe the icon looks like something. Finally, the word you are guessing is likely NOT vessel; that exists already in the glossary. Similiarly, it's unlikely to be a connecting word like has or is or because, as it's a simple record keeping language.
 
-You must provide your answer within brackets, so as an example for the above, I would expect something like this: [“fruit”, “cut”, "person", “picked, “store’, “3”]
+You must provide ONLY your *final* answer within square brackets, so as an example for the above, I would expect something like this: [“fruit”, “cut”, "person", “picked, “store’, “3”]. Please NEVER use square brackets outside of this (use something else like normal brackets), as it will confuse our parser. Please confirm at the begining of the message you understand this requirement.
     """
     prompt = f"Here is the dictionary: {linear_a_dict}. {context_hint}. Now, translate the following Linear A sentence: {' '.join(sentence)}"
 
@@ -89,6 +116,9 @@ You must provide your answer within brackets, so as an example for the above, I 
 
 def extract_content_from_brackets(text):
     """Extract and return the content inside the first pair of square brackets in the provided text."""
+    # Replace curly quotes with straight quotes
+    text = text.replace('“', '"').replace('”', '"').replace('‘', "'").replace('’', "'")
+
     match = re.search(r'\[(.*?)\]', text)
     if match:
         return match.group(1)  # Returns the content within the brackets
@@ -147,8 +177,8 @@ def main(data):
     for entry in data:
         sentence = entry['sentence']
         known_translation = entry['translation']
-        print("Original:", sentence)
-        print("Known Translations:", known_translation)
+        # print("Original:", sentence)
+        # print("Known Translations:", known_translation)
 
         translation_attempt = ai_translate(sentence)
         translation = ast.literal_eval(f"[{translation_attempt}]")
