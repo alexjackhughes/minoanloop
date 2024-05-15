@@ -1,0 +1,5 @@
+  produce   5       weave cloth 4 4.
+  person   tax 3 sheppard tax 4      produce store 1.
+ewe store items 1   2.
+  produce   5    .
+ewe store items.

@@ -48,37 +48,37 @@ linear_a_dict = {
     '𐝈': '', '𐝉': '', '𐝊': '', '𐝋': '', '𐝌': '', '𐝍': '', '𐝎': '', '𐝏': '',
     '𐝐': '', '𐝑': '', '𐝒': '', '𐝓': '', '𐝔': '', '𐝕': '',
     '𐝠': '', '𐝡': '', '𐝢': '', '𐝣': '', '𐝤': '', '𐝥': '', '𐝦': '', '𐝧': '',
-        '𐄇': '1 units',
-    '𐄈': '2 units',
-    '𐄉': '3 units',
-    '𐄊': '4 units',
-    '𐄋': '5 units',
-    '𐄌': '6 units',
-    '𐄍': '7 units',
-    '𐄎': '8 units',
-    '𐄏': '9 units',
-    '𐄐': '10 units',
-    '𐄑': '20 units',
-    '𐄒': '30 units',
-    '𐄓': '40 units'
+        '𐄇': '1',
+    '𐄈': '2',
+    '𐄉': '3',
+    '𐄊': '4',
+    '𐄋': '5',
+    '𐄌': '6',
+    '𐄍': '7',
+    '𐄎': '8',
+    '𐄏': '9',
+    '𐄐': '10',
+    '𐄑': '20',
+    '𐄒': '30',
+    '𐄓': '40'
 }
 
 # Collect more from here:
 data = [
     {
   "sentence": ["𐘤", "𐘀", "𐘃", "𐘈", "𐘴", "𐄋", "𐘇", "𐘤", "𐘀", "𐘄", "𐘚", "𐘇", "𐘲", "𐘫", "𐘮", "𐄊"],
-  "translation": ["", "", "produce", "", "", "5units", "", "", "", "", "", "", "", "weave", "", "4units"]
+  "translation": ["", "", "produce", "", "", "5", "", "", "", "", "", "", "", "weave", "", "4"]
 },  # ARKH 2
 {
   "sentence":    ["𐘿", "𐘠", "𐙇", "𐘚", "𐘘", "𐘱", "𐄉", "𐘬", "𐘱", "𐄊", "𐘳", "𐘅", "𐘠", "𐘀", "𐘙", "𐘃", "𐘹", "𐄇"],
-  "translation": ["", "", "", "", "", "tax", "3units", "sheppard", "tax", "4units", "", "", "", "", "produce", "", "1unit"]
+  "translation": ["", "", "", "", "", "tax", "3", "sheppard", "tax", "4", "", "", "", "", "produce", "store", "1"]
 },  # HT 7a
 {
   "sentence": ["𐘐", "𐘹", "𐘗", "𐄇", "𐘀", "𐘘", "𐄈"],
-  "translation": ["", "", "", "", "", "", ""]
+  "translation": ["", "store", "items", "1unit", "", "", "2"]
 }, # HT 7b
-    {"sentence": ["𐘤", "𐘀", "𐘃", "𐘈", "𐘴", "𐄋", "𐘇", "𐘀", "𐘄", "𐘚"], "translation": ["", "", "produce", "", "", "5units", "", "", "", ""]},
-    {"sentence": ["𐘐", "𐘹", "𐘗"], 'translation': ['', '', ''] }, # HT 117b
+    {"sentence": ["𐘤", "𐘀", "𐘃", "𐘈", "𐘴", "𐄋", "𐘇", "𐘀", "𐘄", "𐘚"], "translation": ["", "", "produce", "", "", "5", "", "", "", ""]},
+    {"sentence": ["𐘐", "𐘹", "𐘗"], 'translation': ['', 'store', 'items'] }, # HT 117b
 
     # {"sentence": [], "translation": []},
 ]
@@ -101,7 +101,7 @@ I’ve provided you with an incomplete glossary of Linear A, where some of the s
 "translation": ["", "", "person", "", "", "3"]
 },
 
-Where sentence is the sentence be translated, and translation has known words added to it. I've also provided a dictonary of icons to known terms, please use this dictionary for missing icons first. I then want you to guess the ‘’ empty spaces. This might seem difficult, but remember, it's likely that this is an audit by an administrator of a bronze age kingdom, so make sure it makes sense in that context; maybe they are talking about storing food, going to war or other bronze age activities. It’s also a pictorial language, so maybe the icon looks like something. Finally, the word you are guessing is likely NOT vessel; that exists already in the glossary. Similiarly, it's unlikely to be a connecting word like has or is or because, as it's a simple record keeping language.
+Where sentence is the sentence be translated, and translation has known words added to it. I've also provided a dictonary of icons to known terms, please use this dictionary for missing icons first. I then want you to guess only the ‘’ empty spaces. Do not try to change words that are already in the dictionary. This might seem difficult, but remember, it's likely that this is an audit by an administrator of a bronze age kingdom, so make sure it makes sense in that context; maybe they are talking about storing food, going to war or other bronze age activities. It’s also a pictorial language, so maybe the icon looks like something. Finally, the word you are guessing is likely NOT vessel; that exists already in the glossary. Similiarly, it's unlikely to be a connecting word like has or is or because, as it's a simple record keeping language.
 
 You must provide ONLY your *final* answer within square brackets, so as an example for the above, I would expect something like this: [“fruit”, “cut”, "person", “picked, “store’, “3”]. Please NEVER use square brackets outside of this (use something else like normal brackets), as it will confuse our parser. Please confirm at the begining of the message you understand this requirement.
     """
@@ -172,6 +172,42 @@ def check_true_false(answer):
         # Return None or raise an exception if neither is found
         return None
 
+
+def translate_sentences(linear_a_dictionary, data):
+    translations = []
+
+    for item in data:
+        sentence = item['sentence']
+        translated_sentence = []
+
+        for symbol in sentence:
+            translated_word = linear_a_dictionary.get(symbol, '')
+            translated_sentence.append(translated_word)
+
+        translations.append(' '.join(translated_sentence) + '.')
+
+    return translations
+
+def save_translations(translations):
+    folder_name = "translations"
+
+    # Create the translations folder if it doesn't exist
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+
+    # Find the next available number for the new translation file
+    existing_files = os.listdir(folder_name)
+    file_numbers = [int(file.split('.')[0]) for file in existing_files if file.split('.')[0].isdigit()]
+    next_number = max(file_numbers) + 1 if file_numbers else 1
+
+    # Save the translations to the new file
+    file_path = os.path.join(folder_name, f"{next_number}.txt")
+    with open(file_path, "w", encoding="utf-8") as file:
+        for translation in translations:
+            file.write(translation + "\n")
+
+    print(f"Translations saved to {file_path}")
+
 # Main function to process the data
 def main(data):
     for entry in data:
@@ -190,6 +226,11 @@ def main(data):
                 update_symbol(sym, trans)
 
             save_glossary(linear_a_dict)
+
+            # Also save the translations
+            print("Saving translations...")
+            translations = translate_sentences(linear_a_dict, data)
+            save_translations(translations)
         else:
             print("Translation disapproved, retrying...")
             exit()

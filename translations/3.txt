@@ -1,0 +1,5 @@
+ inspect produce   5   inspect  produce  weave cloth 4 10.
+items 4 person produce audit tax 9 sheppard tax 10 audit sheep 4 inspect  produce store 1.
+ewe store items 1 inspect audit 2.
+ inspect produce   5  inspect  produce.
+ewe store items.
